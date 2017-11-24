@@ -43,6 +43,8 @@ router.post('/fileupload', upload.single('dm'), function(req, res, next) {
 
 
 	request.post({url:'http://datatanu.com:8080/contestwebapp/uploadfinal', formData: formData}, function(err, httpResponse, body) {
+		fs.unlink(req.file.path);
+
 	  if (err) {
 	    res.end('upload failed:', err)
 	  }
