@@ -49,7 +49,7 @@ router.post('/fileupload', upload.single('dm'), function(req, res, next) {
 	    res.end('upload failed:', err)
 	  }
 
-	  if (httpResponse.statusCode = 500) {
+	  if (httpResponse.statusCode == 500) {
 	  	res.end("Something went wrong. Please, make sure your submission is properly formatted");
 	  }
 
