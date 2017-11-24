@@ -159,6 +159,17 @@ router.post('/fileupload', upload.single('dm'), function(req, res, next) {
 router.get('/results', function(req, res, next) {
 	Results.find({}, function(err, results) {
 		if (err) throw err;
+
+		results.sort((a, b) => {
+			if (a.error < b.error) {
+				return -1;
+			} else if (a.error > b.error) {
+				return 1;
+			}
+
+			return 0;
+		});
+
 		res.render('leaderboard.ejs', {results: results, place: null});
 	});	
 })
