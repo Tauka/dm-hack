@@ -1,0 +1,28 @@
+<% include head %>
+<table class="table is-bordered is-hoverable is-fullwidth">
+	<% if (place) { %>
+	<div class="notification is-primary">
+		Your place is  <%= place %> amongst <%= results.length %> results
+	</div>
+	<% } %>
+
+	<thead>
+		<tr>
+			<th> Position </th>
+			<th> Name </th>
+			<th> Error rate </th>
+			<th> Uploaded </th>
+		</tr>
+	</thead>
+	<tbody>
+		<% results.forEach(function(result){ %>
+		<tr>
+			<td> <%= results.indexOf(result) + 1 %> </td>
+			<td> <%= result.name %> </td>
+			<td> <%= result.error %> </td>
+			<td> <%= result.getUpdatedTime() %> </td>
+		</tr>
+		<% }) %>
+	</tbody>
+</table>
+<% include foot %>

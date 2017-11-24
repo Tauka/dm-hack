@@ -11,7 +11,11 @@ var upload = multer({ dest: 'uploads/' })
 /* GET home page. */
 router.get('/', function(req, res, next) {
 	console.log("DAMN!");
-  res.render('index', { title: 'Express' });
+  res.render('index.ejs');
+});
+
+router.get('/terms', function(req, res, next) {
+  res.render('terms.ejs');
 });
 
 router.get('/fileupload', function(req, res, next) {
@@ -40,7 +44,11 @@ router.post('/fileupload', upload.single('dm'), function(req, res, next) {
 
 	request.post({url:'http://datatanu.com:8080/contestwebapp/uploadfinal', formData: formData}, function(err, httpResponse, body) {
 	  if (err) {
-	    return console.error('upload failed:', err);
+	    res.end('upload failed:', err)
+	  }
+
+	  if (httpResponse.statusCode = 500) {
+	  	res.end("Something went wrong. Please, make sure your submission is properly formatted");
 	  }
 
 	  if (body.includes("Please wait one minute")) {
@@ -49,50 +57,107 @@ router.post('/fileupload', upload.single('dm'), function(req, res, next) {
 	  }
 
 	  
+	  let error = 0;
+	  try {
+	  	error = parseFloat(body.match(/Error rate is (\d+.\d+)/)[1]);	
+	  } catch(e) {
+	  	res.end("Something went wrong. Please, make sure your submission is properly formatted. Exception: " + e);
+	  }
 	  
 
-	  error = parseFloat(body.match(/Error rate is (\d+.\d+)/)[1]);
+	  Results.findOneAndUpdate({error: error}, {
+			$set: {
+				name: req.body.username
+			}
+		}, {
+			new: true
+		}, function(err, dupResult) {
+		  	if (err) throw err;
 
-	  Results.create({
-	  	name: req.body.username,
-	  	error: error
-	  }, function (err, savedResult) {
-	  	if (err) throw err;
+		  	if (dupResult != null) {
+
+		  		Results.find({}, function(err, allResults) {
+		  			let place = -1;
+
+		  			allResults.sort((a, b) => {
+		  				if (a.error < b.error) {
+		  					return -1;
+		  				} else if (a.error > b.error) {
+		  					return 1;
+		  				}
+
+		  				return 0;
+		  			});
+		  			// console.log(dupResult._id)
+		  			// allResults.forEach((result, index) => {
+		  			// 	console.log(result._id)
+		  				
+
+		  			// 	if (result._id === dupResult._id) {
+		  			// 		console.log("FOUND!");
+		  			// 		console.log(index);
+		  			// 		place = index;
+		  			// 	}
+		  			// });
 
 
-	  	Results.find({}, function(err, allResults) {
-	  		let place = -1;
+		  			for (let i = 0; i < allResults.length; i++) {
+		  				if (allResults[i]._id.equals(dupResult._id)) {
+		  					place = i + 1;
+		  				}
+		  			}
 
-	  		allResults.sort((a, b) => {
-	  			if (a.error < b.error) {
-	  				return -1;
-	  			} else if (a.error > b.error) {
-	  				return 1;
-	  			}
+		  			res.render('leaderboard.ejs', {results: allResults, place: place});
+		  		});	
 
-	  			return 0;
-	  		});
-	  		console.log(savedResult._id)
-	  		allResults.forEach((result, index) => {
-	  			console.log(result._id)
-	  			
-	  			
-	  			if (result._id == savedResult._id) {
-	  				place = index;
-	  			}
-	  		});
+		  	} else {
+		  		Results.create({
+		  			name: req.body.username,
+		  			error: error
+		  		}, function (err, savedResult) {
+		  			if (err) throw err;
 
-	  		res.render('leaderboard', {results: allResults, place: place});
-	  	});	
+
+		  			Results.find({}, function(err, allResults) {
+		  				let place = -1;
+
+		  				allResults.sort((a, b) => {
+		  					if (a.error < b.error) {
+		  						return -1;
+		  					} else if (a.error > b.error) {
+		  						return 1;
+		  					}
+
+		  					return 0;
+		  				});
+		  				console.log(savedResult._id)
+		  				allResults.forEach((result, index) => {
+		  					console.log(result._id)
+		  					
+
+		  					if (result._id == savedResult._id) {
+		  						place = index;
+		  					}
+		  				});
+
+		  				res.render('leaderboard.ejs', {results: allResults, place: place});
+		  			});	
+		  		});
+		  	}
+
+		  	
+
+	  	
 	  });
+
+	  
 	});	
 });
 
 router.get('/results', function(req, res, next) {
 	Results.find({}, function(err, results) {
 		if (err) throw err;
-		console.log(results);
-		res.render('leaderboard', {results: results});
+		res.render('leaderboard.ejs', {results: results, place: null});
 	});	
 })
 

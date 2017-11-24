@@ -1,9 +1,0 @@
-extends layout
-
-block content
-	a(href="/results") results
-
-	form(action="/fileupload", method="post", enctype="multipart/form-data")
-		input(id="username", name="username", type="text")
-		input(id="fileupload",name="dm",type="file")
-		input(type="submit",value="Submit")

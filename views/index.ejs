@@ -1,0 +1,32 @@
+<% include head %>
+
+<form action="/fileupload" method="post" enctype="multipart/form-data">
+	<div class="field">
+		<label class="label">Username</label>
+		<div class="control">
+			<input class="input" type="text" id="username" name="username" placeholder="your name" required>
+		</div>
+	</div>
+	<div class="field">
+		<label class="label">Upload</label>
+		<div class="control">
+			<input type="file" id="fileupload" name="dm" required/>
+		</div>
+	</div>
+
+	<div class="field">
+		<div class="control">
+			<label class="checkbox">
+				<input type="checkbox">
+				I agree to the <a href="/terms">terms and conditions</a>
+			</label>
+		</div>
+	</div>
+
+	<div class="field is-grouped">
+		<div class="control">
+			<button class="button is-link" type="submit">Submit</button>
+		</div>
+	</div>
+</form>
+<% include foot %>
