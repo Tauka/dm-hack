@@ -56,7 +56,7 @@ mongod --dbpath [yourPathToDataFolder]
 Run Express server
 
 ```
-npm run
+npm run start
 ```
 
 ## Deployment
@@ -70,7 +70,7 @@ Just copy project to any remote server and do steps above
 
 ## Contributing
 
-PR me any functionality you want, you if you want to do refactoring
+PR me any functionality you want, or if you want to do refactoring
 
 ## Authors
 
